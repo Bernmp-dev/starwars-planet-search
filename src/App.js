@@ -1,9 +1,13 @@
 import React from 'react';
 import './App.css';
+import NewComponent from './Components/NewComponent';
+import Context from './context/Context';
 
 function App() {
   return (
-    <span>Hello, App!</span>
+    <Context.Provider value={ { teste: ' Online 🔵' } }>
+      <NewComponent />
+    </Context.Provider>
   );
 }
 
