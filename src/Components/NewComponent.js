@@ -6,7 +6,7 @@ function NewComponent() {
   return (
     <div>
       <span>
-        Teste:
+        Teste::
         { teste }
       </span>
     </div>
