@@ -1,5 +1,6 @@
 import React, { createContext, useMemo, useState } from 'react';
-// import PropTypes from 'prop-types':
+import PropTypes from 'prop-types';
+
 export const CallApiContext = createContext();
 
 function CallApi({ children }) {
@@ -39,6 +40,11 @@ function CallApi({ children }) {
   );
 }
 
-CallApi.propTypes = {};
+CallApi.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+};
 
 export default CallApi;

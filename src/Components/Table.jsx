@@ -1,19 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CallApiContext } from '../context/PlanetsApiProvider';
 // import PropTypes from 'prop-types';
 // import AppContext from '../context/AppContext';
 // import fetchPlanets from '../services/planetsAPI';
 
-function Table(props) {
-  const { planets, isLoading, setIsLoading,
-    errors, fetchPlanets } = useContext(CallApiContext);
+function Table() {
+  const { planets,
+    //  isLoading, setIsLoading, errors,
+    fetchPlanets } = useContext(CallApiContext);
 
   useEffect(() => {
     fetchPlanets();
-  }, []);
+  }, [fetchPlanets]);
 
   return (
-    <div>
+    <form>
       <table>
         <thead>
           <tr>
@@ -52,7 +53,7 @@ function Table(props) {
           ))}
         </tbody>
       </table>
-    </div>
+    </form>
   );
 }
 
