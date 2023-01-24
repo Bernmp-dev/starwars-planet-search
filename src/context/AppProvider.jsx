@@ -16,3 +16,10 @@ function AppProvider({ children }) {
 }
 
 export default AppProvider;
+
+AppProvider.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+};
