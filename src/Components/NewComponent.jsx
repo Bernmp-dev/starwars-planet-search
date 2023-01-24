@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import Context from '../context/Context';
+import AppContext from '../context/AppContext';
 
 function NewComponent() {
-  const { teste } = useContext(Context);
+  const { teste } = useContext(AppContext);
   return (
     <div>
       <span>
-        Teste::
+        Teste:
         { teste }
       </span>
     </div>

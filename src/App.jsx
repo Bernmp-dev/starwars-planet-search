@@ -1,13 +1,14 @@
 import React from 'react';
 import './App.css';
 import NewComponent from './Components/NewComponent';
-import Context from './context/Context';
+import Table from './Components/Table';
 
 function App() {
   return (
-    <Context.Provider value={ { teste: ' Online 🔵' } }>
+    <div>
       <NewComponent />
-    </Context.Provider>
+      <Table />
+    </div>
   );
 }
 
