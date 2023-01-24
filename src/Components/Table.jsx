@@ -1,13 +1,20 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CallApiContext } from '../context/PlanetsApiProvider';
 // import PropTypes from 'prop-types';
 // import AppContext from '../context/AppContext';
 // import fetchPlanets from '../services/planetsAPI';
 
 function Table() {
+  const [nameFilter, setNameFilter] = useState('');
   const { planets,
     //  isLoading, setIsLoading, errors,
     fetchPlanets } = useContext(CallApiContext);
+
+  const handleChenge = ({ target: { name, value } }) => {
+    setNameFilter({
+      [name]: value,
+    });
+  };
 
   useEffect(() => {
     fetchPlanets();
@@ -15,6 +22,13 @@ function Table() {
 
   return (
     <form>
+      <input
+        type="text"
+        name="nameFilter"
+        data-testid="name-filter"
+        value={ nameFilter }
+        onChange={ (e) => handleChenge(e) }
+      />
       <table>
         <thead>
           <tr>

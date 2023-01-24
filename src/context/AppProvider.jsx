@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import AppContext from './AppContext';
 // import fetchPlanets from '../services/planetsAPI';
 
