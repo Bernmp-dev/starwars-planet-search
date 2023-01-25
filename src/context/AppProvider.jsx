@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import AppContext from './AppContext';
-// import fetchPlanets from '../services/planetsAPI';
 
 function AppProvider({ children }) {
   const values = useMemo(() => ({
     teste: ' Online 🔵',
-    // isLoading: false,
   }), []);
 
   return (
@@ -19,8 +17,5 @@ function AppProvider({ children }) {
 export default AppProvider;
 
 AppProvider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.node.isRequired,
 };

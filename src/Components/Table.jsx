@@ -10,15 +10,12 @@ function Table() {
     //  isLoading, setIsLoading, errors,
     fetchPlanets } = useContext(CallApiContext);
 
-  const handleChenge = ({ target: { name, value } }) => {
-    setNameFilter({
-      [name]: value,
-    });
-  };
-
   useEffect(() => {
     fetchPlanets();
-  }, [fetchPlanets]);
+  }, []);
+
+  const filteredPlanets = planets.filter(({ name }) => name.includes(nameFilter));
+  // const planetNames = [].concat(...filteredPlanets.map((p) => Object.keys(p))[0]);
 
   return (
     <form>
@@ -27,8 +24,25 @@ function Table() {
         name="nameFilter"
         data-testid="name-filter"
         value={ nameFilter }
-        onChange={ (e) => handleChenge(e) }
+        onChange={ ({ target }) => setNameFilter(target.value) }
+        placeholder="                 Search"
       />
+      <br />
+      <br />
+      {/* <select data-testid="column-filter" name="" id="">
+        <option value="population">population</option>
+        <option value="orbital_period">orbital_period</option>
+        <option value="diameterdiameter">diameter</option>
+        <option value="rotation_period">rotation_period</option>
+        <option value="surface_water">surface_water</option>
+      </select>
+      <select name="" id="">
+        <option value=""></option>
+        <option value=""></option>
+        <option value=""></option>
+        <option value=""></option>
+        <option value=""></option>
+      </select> */}
       <table>
         <thead>
           <tr>
@@ -48,7 +62,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {planets.map((planet, i) => (
+          {filteredPlanets.map((planet, i) => (
             <tr key={ i }>
               <td>{planet.name}</td>
               <td>{planet.rotation_period}</td>
