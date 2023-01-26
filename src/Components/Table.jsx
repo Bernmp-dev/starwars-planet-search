@@ -1,21 +1,40 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CallApiContext } from '../context/PlanetsApiProvider';
 // import PropTypes from 'prop-types';
-// import AppContext from '../context/AppContext';
-// import fetchPlanets from '../services/planetsAPI';
 
 function Table() {
   const [nameFilter, setNameFilter] = useState('');
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [amount, setAmount] = useState(0);
+  const [isClicked, setClick] = useState(false);
   const { planets,
     //  isLoading, setIsLoading, errors,
     fetchPlanets } = useContext(CallApiContext);
+  const [numberFilter, setNumberFilter] = useState(planets);
 
   useEffect(() => {
     fetchPlanets();
   }, []);
 
+  const columnFilter = () => {
+    const filtered = planets.filter((p) => {
+      switch (comparison) {
+      case 'maior que':
+        return Number(p[column]) > amount;
+      case 'menor que':
+        return Number(p[column]) < amount;
+      case 'igual a':
+        return Number(p[column]) === amount;
+      default:
+        return p;
+      }
+    });
+    setNumberFilter(filtered);
+    setClick(true);
+  };
+
   const filteredPlanets = planets.filter(({ name }) => name.includes(nameFilter));
-  // const planetNames = [].concat(...filteredPlanets.map((p) => Object.keys(p))[0]);
 
   return (
     <form>
@@ -25,24 +44,43 @@ function Table() {
         data-testid="name-filter"
         value={ nameFilter }
         onChange={ ({ target }) => setNameFilter(target.value) }
-        placeholder="                 Search"
+        placeholder="Search"
       />
       <br />
       <br />
-      {/* <select data-testid="column-filter" name="" id="">
+      <select
+        data-testid="column-filter"
+        onChange={ ({ target }) => setColumn(target.value) }
+        defaultValue="population"
+      >
         <option value="population">population</option>
         <option value="orbital_period">orbital_period</option>
-        <option value="diameterdiameter">diameter</option>
+        <option value="diameter">diameter</option>
         <option value="rotation_period">rotation_period</option>
         <option value="surface_water">surface_water</option>
       </select>
-      <select name="" id="">
-        <option value=""></option>
-        <option value=""></option>
-        <option value=""></option>
-        <option value=""></option>
-        <option value=""></option>
-      </select> */}
+      <select
+        data-testid="comparison-filter"
+        onChange={ ({ target }) => setComparison(target.value) }
+        defaultValue="maior que"
+      >
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
+      </select>
+      <input
+        data-testid="value-filter"
+        type="number"
+        onChange={ ({ target }) => setAmount(+target.value) }
+        defaultValue="0"
+      />
+      <button
+        data-testid="button-filter"
+        type="button"
+        onClick={ () => columnFilter() }
+      >
+        Filtrar
+      </button>
       <table>
         <thead>
           <tr>
@@ -62,7 +100,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {filteredPlanets.map((planet, i) => (
+          {(isClicked ? numberFilter : filteredPlanets).map((planet, i) => (
             <tr key={ i }>
               <td>{planet.name}</td>
               <td>{planet.rotation_period}</td>

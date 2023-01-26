@@ -9,6 +9,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input[type="number"] {
+  width: 3em;
+}
+
+input, select, button, option {
+  background-color: #232323f4;
+  color: whitesmoke;
+  margin: 10px;
+  border-radius: 6px;
+  border-style: solid;
+  text-align: center;
+
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
