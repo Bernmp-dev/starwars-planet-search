@@ -1,24 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { AiOutlineDelete } from 'react-icons/ai';
 import { CallApiContext } from '../context/PlanetsApiProvider';
 // import PropTypes from 'prop-types';
 
 function Table() {
+  const { planets, fetchPlanets } = useContext(CallApiContext);
   const [nameFilter, setNameFilter] = useState('');
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [amount, setAmount] = useState(0);
-  const [isClicked, setClick] = useState(false);
-  const { planets,
-    //  isLoading, setIsLoading, errors,
-    fetchPlanets } = useContext(CallApiContext);
+  // const [isClicked, setClick] = useState(false);
   const [numberFilter, setNumberFilter] = useState(planets);
+  const [filtersArray, setFiltersArray] = useState([]);
 
   useEffect(() => {
     fetchPlanets();
   }, []);
 
+  const filteredPlanets = planets.filter(({ name }) => name.includes(nameFilter));
+
+  const handleFilters = (filtersArray.length > 0 ? numberFilter : filteredPlanets);
+
   const columnFilter = () => {
-    const filtered = planets.filter((p) => {
+    const obj = [`${column}`, `${comparison}`, `${amount}`];
+    setFiltersArray([...filtersArray, obj]);
+    const filtered = handleFilters.filter((p) => {
       switch (comparison) {
       case 'maior que':
         return Number(p[column]) > amount;
@@ -31,10 +37,7 @@ function Table() {
       }
     });
     setNumberFilter(filtered);
-    setClick(true);
   };
-
-  const filteredPlanets = planets.filter(({ name }) => name.includes(nameFilter));
 
   return (
     <form>
@@ -81,6 +84,16 @@ function Table() {
       >
         Filtrar
       </button>
+      <ul>
+        {filtersArray.map((filter, index) => (
+          <li key={ index }>
+            { `${filter[0]} ${filter[1]} ${filter[2]}` }
+            <button type="button">
+              <AiOutlineDelete />
+            </button>
+          </li>
+        ))}
+      </ul>
       <table>
         <thead>
           <tr>
@@ -100,7 +113,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {(isClicked ? numberFilter : filteredPlanets).map((planet, i) => (
+          {handleFilters.map((planet, i) => (
             <tr key={ i }>
               <td>{planet.name}</td>
               <td>{planet.rotation_period}</td>
