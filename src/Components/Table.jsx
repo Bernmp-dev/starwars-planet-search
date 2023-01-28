@@ -6,12 +6,13 @@ import { CallApiContext } from '../context/PlanetsApiProvider';
 function Table() {
   const { planets, fetchPlanets } = useContext(CallApiContext);
   const [nameFilter, setNameFilter] = useState('');
-  const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [amount, setAmount] = useState(0);
-  // const [isClicked, setClick] = useState(false);
-  const [numberFilter, setNumberFilter] = useState(planets);
+  const [column, setColumn] = useState('population');
+  const [numericFilter, setNumericFilter] = useState(planets);
   const [filtersArray, setFiltersArray] = useState([]);
+  const [options, setOptions] = useState(['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water']);
 
   useEffect(() => {
     fetchPlanets();
@@ -19,24 +20,48 @@ function Table() {
 
   const filteredPlanets = planets.filter(({ name }) => name.includes(nameFilter));
 
-  const handleFilters = (filtersArray.length > 0 ? numberFilter : filteredPlanets);
+  const handleFilters = (filtersArray.length > 0 ? numericFilter : filteredPlanets);
 
-  const columnFilter = () => {
-    const obj = [`${column}`, `${comparison}`, `${amount}`];
-    setFiltersArray([...filtersArray, obj]);
+  const newOpt = options.filter((option) => !option.includes(column));
+
+  const handleSetFilters = () => {
     const filtered = handleFilters.filter((p) => {
       switch (comparison) {
       case 'maior que':
-        return Number(p[column]) > amount;
+        return p[column] > +amount;
       case 'menor que':
-        return Number(p[column]) < amount;
+        return p[column] < +amount;
       case 'igual a':
-        return Number(p[column]) === amount;
+        return p[column] === +amount;
       default:
         return p;
       }
     });
-    setNumberFilter(filtered);
+    setNumericFilter(filtered);
+  };
+
+  const columnFilter = () => {
+    const obj = [`${column}`, `${comparison}`, `${amount}`];
+    setFiltersArray([...filtersArray, obj]);
+    setOptions(newOpt);
+    setColumn(newOpt[0]);
+    handleSetFilters();
+  };
+
+  const handleRemoveFilter = (name) => {
+    const newFilters = filtersArray.filter((item) => !item.includes(name));
+    console.log(newFilters);
+    setFiltersArray(newFilters);
+    options.unshift(name);
+
+    setNumericFilter(planets);
+
+    newFilters.forEach((e) => {
+      setColumn(e[0]);
+      setComparison(e[1]);
+      setAmount(+e[2]);
+      handleSetFilters();
+    });
   };
 
   return (
@@ -54,13 +79,13 @@ function Table() {
       <select
         data-testid="column-filter"
         onChange={ ({ target }) => setColumn(target.value) }
-        defaultValue="population"
+        defaultValue={ options[0] }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {options.map((option) => (
+          <option key={ option } value={ option }>
+            {option}
+          </option>
+        ))}
       </select>
       <select
         data-testid="comparison-filter"
@@ -81,14 +106,19 @@ function Table() {
         data-testid="button-filter"
         type="button"
         onClick={ () => columnFilter() }
+        disabled={ filtersArray.length >= 5 }
       >
         Filtrar
       </button>
       <ul>
-        {filtersArray.map((filter, index) => (
-          <li key={ index }>
+        {filtersArray.map((filter) => (
+          <li key={ filter[0] } data-testid="filter">
             { `${filter[0]} ${filter[1]} ${filter[2]}` }
-            <button type="button">
+            <button
+              type="button"
+              onClick={ () => handleRemoveFilter(filter[0]) }
+              data-testid="button-remove-filters"
+            >
               <AiOutlineDelete />
             </button>
           </li>
