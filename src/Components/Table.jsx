@@ -16,7 +16,6 @@ function Table() {
   const newOpt = options.filter((option) => option !== column);
 
   const planetsBySearch = planets.filter(({ name }) => name.includes(nameFilter));
-  console.log(planetsBySearch);
 
   const [numericFilter, setNumericFilter] = useState(planetsBySearch);
   const handleFilters = (filtersArray.length > 0 ? numericFilter : planetsBySearch);
@@ -25,58 +24,52 @@ function Table() {
     fetchPlanets();
   }, []);
 
-  const handleSetFilters = () => {
-    const filtered = handleFilters.filter((p) => {
-      switch (comparison) {
-      case 'maior que':
-        return +p[column] > +amount;
-      case 'menor que':
-        return +p[column] < +amount;
-      case 'igual a':
-        return +p[column] === +amount;
-      default:
-        return p;
-      }
-    });
-    console.log(filtered);
-    setNumericFilter(filtered);
-    // setComparison('maior que');
-    // setAmount(0);
+  const handleComparison = (col, comp, amou, p) => {
+    switch (comp) {
+    case 'maior que':
+      return +p[col] > +amou;
+    case 'menor que':
+      return +p[col] < +amou;
+    case 'igual a':
+      return +p[col] === +amou;
+    default:
+      return false;
+    }
   };
 
-  const columnFilter = () => {
+  const handleSetFilters = () => {
+    const filtered = planetsBySearch.filter((plan) => (
+      !filtersArray.some((curr) => !handleComparison(
+        curr.column,
+        curr.comparison,
+        curr.amount,
+        plan,
+      ))
+    ));
+    setNumericFilter(filtered);
+  };
+
+  const handleAddFilter = () => {
     const obj = { column, comparison, amount };
     setFiltersArray([...filtersArray, obj]);
-    // setNumericFilter(planetsBySearch);
 
     setOptions(newOpt);
-    handleSetFilters();
     setColumn(newOpt[0]);
   };
 
   const handleRemoveFilter = (columnName) => {
     const newFilters = filtersArray
       .filter(({ column: coluna }) => coluna !== columnName);
+
     setFiltersArray(newFilters);
     setOptions([...options, columnName]);
-
-    // setNumericFilter(planetsBySearch);
-
-    if (newFilters.length === 1) {
-      setColumn(newFilters.column);
-      setComparison(newFilters.comparison);
-      setAmount(+newFilters.amount);
-      handleSetFilters();
-    } else {
-      newFilters.forEach((e) => {
-        console.log(e);
-        setColumn(e.column);
-        setComparison(e.comparison);
-        setAmount(+e.amount);
-        handleSetFilters();
-      });
-    }
   };
+
+  useEffect(() => {
+    handleSetFilters();
+  }, [filtersArray]);
+
+  const optionsLimit = 5;
 
   return (
     <form>
@@ -119,10 +112,17 @@ function Table() {
       <button
         data-testid="button-filter"
         type="button"
-        onClick={ () => columnFilter() }
-        disabled={ filtersArray.length >= 5 }
+        onClick={ () => handleAddFilter() }
+        disabled={ filtersArray.length >= optionsLimit }
       >
         Filtrar
+      </button>
+      <button
+        data-testid="button-remove-filters"
+        type="button"
+        onClick={ () => setFiltersArray([]) }
+      >
+        Remover Filtros
       </button>
       <ul>
         {filtersArray.map((filter) => (
@@ -131,7 +131,6 @@ function Table() {
             <button
               type="button"
               onClick={ () => handleRemoveFilter(filter.column) }
-              data-testid="button-remove-filters"
             >
               <AiOutlineDelete />
             </button>
