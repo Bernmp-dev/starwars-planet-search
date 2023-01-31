@@ -10,24 +10,37 @@ function Table() {
   const [amount, setAmount] = useState(0);
   const [column, setColumn] = useState('population');
   const [filtersArray, setFiltersArray] = useState([]);
+
   const [options, setOptions] = useState(['population', 'orbital_period',
     'diameter', 'rotation_period', 'surface_water']);
-  const [order, setOrder] = useState({
-    sort: 'ASC',
-    column: 'population',
-  });
-  // const [click, setClick] = useState(0);
+
+  const [order, setOrder] = useState({ sort: 'ASC', column: 'population', array: [] });
 
   const newOpt = options.filter((option) => option !== column);
+  const [numericFilter, setNumericFilter] = useState([]);
 
-  const planetsBySearch = planets.filter(({ name }) => name.includes(nameFilter));
-
-  const [numericFilter, setNumericFilter] = useState(planets);
-  const handleFilters = (filtersArray.length > 0 ? numericFilter : planetsBySearch);
+  const columnsArray = ['Name', 'Rotation Period', 'Orbital Period', 'Diameter',
+    'Climate', 'Gravity', 'Terrain', 'Surface Water', 'Population',
+    'Films', 'Created', 'Edited', 'URL'];
+  const columnSort = ['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water'];
 
   useEffect(() => {
     fetchPlanets();
   }, []);
+
+  useEffect(() => {
+    setNumericFilter(planets);
+  }, [planets]);
+
+  const filterByText = () => {
+    const planetsBySearch = planets.filter(({ name }) => name.includes(nameFilter));
+    setNumericFilter(planetsBySearch);
+  };
+
+  useEffect(() => {
+    filterByText();
+  }, [nameFilter]);
 
   const handleComparison = (col, comp, amou, p) => {
     switch (comp) {
@@ -43,7 +56,7 @@ function Table() {
   };
 
   const handleSetFilters = () => {
-    const filtered = planetsBySearch.filter((plan) => (
+    const filtered = planets.filter((plan) => (
       !filtersArray.some((curr) => !handleComparison(
         curr.column,
         curr.comparison,
@@ -75,7 +88,11 @@ function Table() {
   }, [filtersArray]);
 
   const filterByOrder = () => {
-    const newOrder = handleFilters.sort((a, b) => {
+    const unknown = numericFilter.filter((e) => e.population === 'unknown');
+    const newOrder = numericFilter.filter((e) => e.population !== 'unknown')
+      .concat(unknown);
+
+    const ordered = newOrder.sort((a, b) => {
       switch (order.sort) {
       case 'ASC':
         return +a[order.column] - +b[order.column];
@@ -85,10 +102,14 @@ function Table() {
         return a - b;
       }
     });
-    const minusOne = -1;
-    newOrder.sort((a) => (a === 'unknown' ? minusOne : 1));
-    setNumericFilter(newOrder);
+
+    // console.log(newOrder);
+    setOrder({ ...order, array: ordered });
   };
+
+  useEffect(() => {
+    setNumericFilter(order.array);
+  }, [order.array]);
 
   const optionsLimit = 5;
 
@@ -142,11 +163,7 @@ function Table() {
         data-testid="column-sort"
         onChange={ ({ target }) => setOrder({ ...order, column: target.value }) }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {columnSort.map((item, i) => (<option key={ i } value={ item }>item</option>))}
       </select>
       <label htmlFor="ascRadio">
         <input
@@ -200,25 +217,13 @@ function Table() {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Rotation Period</th>
-            <th>Orbital Period</th>
-            <th>Diameter</th>
-            <th>Climate</th>
-            <th>Gravity</th>
-            <th>Terrain</th>
-            <th>Surface Water</th>
-            <th>Population</th>
-            <th>Films</th>
-            <th>Created</th>
-            <th>Edited</th>
-            <th>URL</th>
+            {columnsArray.map((item, i) => (<th key={ i }>{item}</th>))}
           </tr>
         </thead>
         <tbody>
-          {handleFilters.map((planet, i) => (
+          {numericFilter.map((planet, i) => (
             <tr key={ i }>
-              <td>{planet.name}</td>
+              <td data-testid="planet-name">{planet.name}</td>
               <td>{planet.rotation_period}</td>
               <td>{planet.orbital_period}</td>
               <td>{planet.diameter}</td>
