@@ -12,12 +12,17 @@ function Table() {
   const [filtersArray, setFiltersArray] = useState([]);
   const [options, setOptions] = useState(['population', 'orbital_period',
     'diameter', 'rotation_period', 'surface_water']);
+  const [order, setOrder] = useState({
+    sort: 'ASC',
+    column: 'population',
+  });
+  // const [click, setClick] = useState(0);
 
   const newOpt = options.filter((option) => option !== column);
 
   const planetsBySearch = planets.filter(({ name }) => name.includes(nameFilter));
 
-  const [numericFilter, setNumericFilter] = useState(planetsBySearch);
+  const [numericFilter, setNumericFilter] = useState(planets);
   const handleFilters = (filtersArray.length > 0 ? numericFilter : planetsBySearch);
 
   useEffect(() => {
@@ -69,6 +74,22 @@ function Table() {
     handleSetFilters();
   }, [filtersArray]);
 
+  const filterByOrder = () => {
+    const newOrder = handleFilters.sort((a, b) => {
+      switch (order.sort) {
+      case 'ASC':
+        return +a[order.column] - +b[order.column];
+      case 'DESC':
+        return +b[order.column] - +a[order.column];
+      default:
+        return a - b;
+      }
+    });
+    const minusOne = -1;
+    newOrder.sort((a) => (a === 'unknown' ? minusOne : 1));
+    setNumericFilter(newOrder);
+  };
+
   const optionsLimit = 5;
 
   return (
@@ -116,6 +137,45 @@ function Table() {
         disabled={ filtersArray.length >= optionsLimit }
       >
         Filtrar
+      </button>
+      <select
+        data-testid="column-sort"
+        onChange={ ({ target }) => setOrder({ ...order, column: target.value }) }
+      >
+        <option value="population">population</option>
+        <option value="orbital_period">orbital_period</option>
+        <option value="diameter">diameter</option>
+        <option value="rotation_period">rotation_period</option>
+        <option value="surface_water">surface_water</option>
+      </select>
+      <label htmlFor="ascRadio">
+        <input
+          data-testid="column-sort-input-asc"
+          type="radio"
+          value="ASC"
+          id="ascRadio"
+          checked={ order.sort === 'ASC' }
+          onChange={ ({ target }) => setOrder({ ...order, sort: target.value }) }
+        />
+        Ascendente
+      </label>
+      <label htmlFor="descRadio">
+        <input
+          data-testid="column-sort-input-desc"
+          type="radio"
+          value="DESC"
+          id="descRadio"
+          checked={ order.sort === 'DESC' }
+          onChange={ ({ target }) => setOrder({ ...order, sort: target.value }) }
+        />
+        Descendente
+      </label>
+      <button
+        data-testid="column-sort-button"
+        type="button"
+        onClick={ filterByOrder }
+      >
+        Ordenar
       </button>
       <button
         data-testid="button-remove-filters"
