@@ -6,7 +6,6 @@ export const CallApiContext = createContext();
 function CallApi({ children }) {
   const [planets, setPlanets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState(null);
 
   const fetchPlanets = async () => {
     const URL = 'https://swapi.dev/api/planets';
@@ -21,8 +20,8 @@ function CallApi({ children }) {
   };
 
   const values = useMemo(() => ({
-    planets, fetchPlanets, isLoading, setIsLoading, errors,
-  }), [planets, isLoading, setIsLoading, errors]);
+    planets, fetchPlanets, isLoading, setIsLoading,
+  }), [planets, isLoading, setIsLoading]);
 
   return (
     <CallApiContext.Provider value={ values }>
