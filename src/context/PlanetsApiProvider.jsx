@@ -10,23 +10,14 @@ function CallApi({ children }) {
 
   const fetchPlanets = async () => {
     const URL = 'https://swapi.dev/api/planets';
-    try {
-      setIsLoading(true);
-      const response = await (await fetch(URL)).json();
-      if (!response.results) {
-        const newError = 'Elemento nao encontrado';
-        throw newError;
-      }
-      const withoutResidents = response.results.map((item) => {
-        delete item.residents;
-        return item;
-      });
-      setPlanets(withoutResidents);
-    } catch (error) {
-      setErrors(error);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    const response = await (await fetch(URL)).json();
+    const withoutResidents = response.results.map((item) => {
+      delete item.residents;
+      return item;
+    });
+    setPlanets(withoutResidents);
+    setIsLoading(false);
   };
 
   const values = useMemo(() => ({

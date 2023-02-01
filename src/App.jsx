@@ -1,15 +1,13 @@
 import React from 'react';
 import './App.css';
-import NewComponent from './Components/NewComponent';
 import Table from './Components/Table';
+import CallApi from './context/PlanetsApiProvider';
 
 function App() {
   return (
-    <div>
-      <NewComponent />
-      <br />
+    <CallApi>
       <Table />
-    </div>
+    </CallApi>
   );
 }
 

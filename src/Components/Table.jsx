@@ -163,7 +163,7 @@ function Table() {
         data-testid="column-sort"
         onChange={ ({ target }) => setOrder({ ...order, column: target.value }) }
       >
-        {columnSort.map((item, i) => (<option key={ i } value={ item }>item</option>))}
+        {columnSort.map((item, i) => (<option key={ i } value={ item }>{item}</option>))}
       </select>
       <label htmlFor="ascRadio">
         <input
@@ -216,7 +216,7 @@ function Table() {
       </ul>
       <table>
         <thead>
-          <tr>
+          <tr data-testid="head-tr">
             {columnsArray.map((item, i) => (<th key={ i }>{item}</th>))}
           </tr>
         </thead>
