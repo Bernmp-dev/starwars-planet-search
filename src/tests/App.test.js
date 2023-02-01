@@ -98,7 +98,7 @@ describe('Testes aplicacao StarWars', () => {
     fireEvent.change(valueFilter, { target: { value: '1000' } });
     expect(valueFilter.value).toBe('1000');
   });
-  test('9 - Atualizacao no column filter', async () => {
+  test('9 - Atualizacao no column filter de igualde', async () => {
     render(<App />);
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
@@ -118,7 +118,7 @@ describe('Testes aplicacao StarWars', () => {
       row = await screen.findAllByTestId('planet-name');
       expect(row.length).toEqual(3);
   });
-  test('10 - Atualizacao no column filter', async () => {
+  test('10 - Atualizacao no column filter "menor que"', async () => {
     render(<App />);
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
@@ -138,7 +138,7 @@ describe('Testes aplicacao StarWars', () => {
       row = await screen.findAllByTestId('planet-name');
       expect(row.length).toEqual(1);
   });
-  test('11 - Atualizacao no column filter', async () => {
+  test('11 - Atualizacao no column filter "maior que"', async () => {
     render(<App />);
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
@@ -183,5 +183,59 @@ describe('Testes aplicacao StarWars', () => {
 
       row = await screen.findAllByTestId('planet-name');
       expect(row[0]).toHaveTextContent('Yavin IV');
+  });
+  test('13 - Botao de apagar todos os filtros', async () => {
+    render(<App />);
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    let row = await screen.findAllByTestId('planet-name');
+
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+    const valueFilter = screen.getByTestId('value-filter');
+    const filterButton = screen.getByTestId('button-filter')  
+    
+    userEvent.selectOptions(columnFilter, columnFilter[3]);
+    userEvent.selectOptions(comparisonFilter, comparisonFilter[2]);
+    userEvent.type(valueFilter, '23');
+    userEvent.click(filterButton);
+
+    row = await screen.findAllByTestId('planet-name');
+    expect(row.length).toEqual(3);
+
+    const removeFilters = screen.getByTestId('button-remove-filters');
+    userEvent.click(removeFilters);
+
+
+    row = await screen.findAllByTestId('planet-name');
+    expect(row.length).toEqual(10);
+  });
+  test('12 - Botao de apagar apenas um filtro da lista de filtros', async () => {
+    render(<App />);
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+    let row = await screen.findAllByTestId('planet-name');
+
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+    const valueFilter = screen.getByTestId('value-filter');
+    const filterButton = screen.getByTestId('button-filter')  
+    
+    userEvent.selectOptions(columnFilter, columnFilter[3]);
+    userEvent.selectOptions(comparisonFilter, comparisonFilter[2]);
+    userEvent.type(valueFilter, '23');
+    userEvent.click(filterButton);
+
+    row = await screen.findAllByTestId('planet-name');
+    expect(row.length).toEqual(3);
+
+    const filterList = screen.getByTestId('filter');
+    expect(filterList).toBeInTheDocument()
+
+    const removeList = screen.getByTestId('remove-list-filter');
+    expect(removeList).toBeInTheDocument();
+
+    userEvent.click(removeList);
+    expect(removeList).not.toBeInTheDocument()
   });
 })

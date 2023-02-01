@@ -43,16 +43,13 @@ function Table() {
   }, [nameFilter]);
 
   const handleComparison = (col, comp, amou, p) => {
-    switch (comp) {
-    case 'maior que':
+    if (comp === 'maior que') {
       return +p[col] > +amou;
-    case 'menor que':
-      return +p[col] < +amou;
-    case 'igual a':
-      return +p[col] === +amou;
-    default:
-      return false;
     }
+    if (comp === 'menor que') {
+      return +p[col] < +amou;
+    }
+    return +p[col] === +amou;
   };
 
   const handleSetFilters = () => {
@@ -93,14 +90,10 @@ function Table() {
       .concat(unknown);
 
     const ordered = newOrder.sort((a, b) => {
-      switch (order.sort) {
-      case 'ASC':
+      if (order.sort === 'ASC') {
         return +a[order.column] - +b[order.column];
-      case 'DESC':
-        return +b[order.column] - +a[order.column];
-      default:
-        return a - b;
       }
+      return +b[order.column] - +a[order.column];
     });
 
     // console.log(newOrder);
@@ -206,6 +199,7 @@ function Table() {
           <li key={ filter.column } data-testid="filter">
             { `${filter.column} ${filter.comparison} ${filter.amount}` }
             <button
+              data-testid="remove-list-filter"
               type="button"
               onClick={ () => handleRemoveFilter(filter.column) }
             >
