@@ -118,7 +118,47 @@ describe('Testes aplicacao StarWars', () => {
       row = await screen.findAllByTestId('planet-name');
       expect(row.length).toEqual(3);
   });
-  test('10 - Atualizacao no order filter', async () => {
+  test('10 - Atualizacao no column filter', async () => {
+    render(<App />);
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+      let row = await screen.findAllByTestId('planet-name');
+      expect(row.length).toEqual(10);
+
+      const columnFilter = screen.getByTestId('column-filter');
+      const comparisonFilter = screen.getByTestId('comparison-filter');
+      const valueFilter = screen.getByTestId('value-filter');
+      const filterButton = screen.getByTestId('button-filter')  
+      
+      userEvent.selectOptions(columnFilter, columnFilter[0]);
+      userEvent.selectOptions(comparisonFilter, comparisonFilter[1]);
+      userEvent.type(valueFilter, '1001');
+      userEvent.click(filterButton);
+
+      row = await screen.findAllByTestId('planet-name');
+      expect(row.length).toEqual(1);
+  });
+  test('11 - Atualizacao no column filter', async () => {
+    render(<App />);
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+      let row = await screen.findAllByTestId('planet-name');
+      expect(row.length).toEqual(10);
+
+      const columnFilter = screen.getByTestId('column-filter');
+      const comparisonFilter = screen.getByTestId('comparison-filter');
+      const valueFilter = screen.getByTestId('value-filter');
+      const filterButton = screen.getByTestId('button-filter')  
+      
+      userEvent.selectOptions(columnFilter, columnFilter[1]);
+      userEvent.selectOptions(comparisonFilter, comparisonFilter[0]);
+      userEvent.type(valueFilter, '5000');
+      userEvent.click(filterButton);
+
+      row = await screen.findAllByTestId('planet-name');
+      expect(row.length).toEqual(1);
+  });
+  test('12 - Atualizacao no order filter', async () => {
     render(<App />);
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
